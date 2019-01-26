@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-
+using System.Data.SqlTypes;
 
 namespace ReservaSala.Infra.BancoDriver
 {
@@ -91,13 +91,21 @@ namespace ReservaSala.Infra.BancoDriver
             return this.ObterConexao;
         }
 
-        public DataSet ObterTodos(string sql)
+        public DataSet ObterTodos(string sql,List<Parametro> parametros)
         {
             try
             {
                 using (var conexao = Conexao())
                 {
                     SqlDataAdapter DA = new SqlDataAdapter(sql, new SqlConnection(conexao.ConnectionString));
+                    foreach (var item in parametros)
+                    {
+                        DA.SelectCommand.Parameters.Add(new SqlParameter
+                        {
+                            ParameterName = item.Nome,
+                            Value = item.Valor ?? SqlBinary.Null
+                        });
+                    }
                     DataSet DS = new DataSet();
                     conexao.Open();
                     DA.Fill(DS);

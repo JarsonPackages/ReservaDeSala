@@ -12,7 +12,7 @@ namespace ReservaSala.Infra.Entidades
             DataCadastro = DateTime.Now;
         }
 
-        public Guid ID { get; private set; }
-        public DateTime DataCadastro { get; private set; }
+        public Guid ID { get;  set; }
+        public DateTime DataCadastro { get;  set; }
     }
 }

@@ -11,11 +11,11 @@ using ReservaSala.Dominio.Repositorio;
 
 namespace ReservaSala.Dominio.Comandos.Manipular
 {
-    public class CadastroUsuarioManipular : IComandoManipulador<CadastroUsuarioComando>
+    public class UsuarioManipulador : IComandoManipulador<CadastroUsuarioComando>,IComandoManipulador<LoginUsuarioComando>
     {
         IUsuarioRepositorio UsuarioRepositorio;
 
-        public CadastroUsuarioManipular(IUsuarioRepositorio _UsuarioRepositorio)
+        public UsuarioManipulador(IUsuarioRepositorio _UsuarioRepositorio)
         {
             UsuarioRepositorio = _UsuarioRepositorio;
         }
@@ -33,27 +33,34 @@ namespace ReservaSala.Dominio.Comandos.Manipular
 
             if (!usuario.IsValid())
             {
-                CadastroUsuarioSaida UsuarioSaida = new CadastroUsuarioSaida();
-                UsuarioSaida.UsuarioCadastrado = false;
-                UsuarioSaida.Notificacoes = (List<Notification>)usuario.Notifications;
+                OperacaoPadraoSaida UsuarioSaida = new OperacaoPadraoSaida(false,(List<Notification>)usuario.Notifications);
+        
                 return UsuarioSaida;
             }
-
-
 
             senha.Criptografar(Utilidades.Criptografia.TipoCriptografia.MD5);
 
             bool usuarioCadastrado = UsuarioRepositorio.CadastraUsuario(usuario);
 
-
-            CadastroUsuarioSaida cadastroUsuarioSaida = new CadastroUsuarioSaida();
-
-            cadastroUsuarioSaida.Notificacoes = (List<Notification>)usuario.Notifications;
-            cadastroUsuarioSaida.UsuarioCadastrado = usuarioCadastrado;
-
-            return cadastroUsuarioSaida;
+            return new OperacaoPadraoSaida(usuarioCadastrado);
         }
 
+        public IComandoResultado Manipular(LoginUsuarioComando comando)
+        {
+            Email email = new Email(comando.Email);
+            Senha senha = new Senha(comando.Senha);
 
+            LoginUsuario usuarioLogin = new LoginUsuario(email,senha);
+            usuarioLogin.AdicionaNotificacoes(email.Notifications, senha.Notifications);
+            if (!usuarioLogin.IsValid())
+            {
+                  return new LoginUsuarioSaida(false,(List<Notification>) usuarioLogin.Notifications,null  );
+            }
+            Usuario usuario = UsuarioRepositorio.LoginUsuario(usuarioLogin);
+            bool loginRealizado= usuario == null ? false :true ;
+
+            return new LoginUsuarioSaida(loginRealizado,(List<Notification>) usuarioLogin.Notifications,usuario  );
+
+        }
     }
 }

@@ -41,6 +41,8 @@
     <Compile Include="BancoDriver\MSqlServer.cs" />
     <Compile Include="DB\IConexao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositorio\Operacoes\BlocoRepositorio.cs" />
+    <Compile Include="Repositorio\Operacoes\EquipamentoRepositorio.cs" />
     <Compile Include="Repositorio\Operacoes\UsuarioRepositorio.cs" />
     <Compile Include="Util\Parametro.cs" />
     <Compile Include="Util\UtilOperacao.cs" />
